@@ -8,7 +8,8 @@ import os
 import subprocess
 
 
-def BART_ifft(input_path, output_path, bitmask=1):
+
+def ifft(input_path, output_path, bitmask=1):
     """
     Runs the BART inverse FFT (ifft) command.
 
@@ -18,7 +19,7 @@ def BART_ifft(input_path, output_path, bitmask=1):
         bitmask (int, optional): Bitmask specifying along which dimensions the FFT is performed. Default is 1.
 
     Usage:
-        BART_ifft("input", "output", bitmask=1)
+        ifft("input", "output", bitmask=1)
 
     Equivalent to:
         bart fft -iu bitmask input output
@@ -29,7 +30,7 @@ def BART_ifft(input_path, output_path, bitmask=1):
     subprocess.run(command, shell=True, cwd=script_dir, check=True)
 
 
-def BART_extract(input_path, output_path, *args):
+def extract(input_path, output_path, *args):
     """
     Runs the BART extract command.
 
@@ -40,7 +41,7 @@ def BART_extract(input_path, output_path, *args):
                        Should be in the form (dim1, start1, end1, dim2, start2, end2, ...).
 
     Usage:
-        BART_extract("input", "output", 0, 512, 513)
+        extract("input", "output", 0, 512, 513)
 
     Equivalent to:
         bart extract 0 512 513 input output
@@ -56,7 +57,7 @@ def BART_extract(input_path, output_path, *args):
     subprocess.run(command, shell=True, cwd=script_dir, check=True)
 
 
-def BART_bitmask(*dims, reverse=False):
+def bitmask(*dims, reverse=False):
     """
     Converts between a bitmask and a set of dimensions.
 
@@ -69,8 +70,8 @@ def BART_bitmask(*dims, reverse=False):
                      or a list of dimensions if converting from a bitmask.
 
     Usage:
-        BART_bitmask(1, 2)        -> 6  (Equivalent to: bart bitmask 1 2)
-        BART_bitmask(6, reverse=True)  -> [1, 2]  (Equivalent to: bart bitmask -b 6)
+        bitmask(1, 2)        -> 6  (Equivalent to: bart bitmask 1 2)
+        bitmask(6, reverse=True)  -> [1, 2]  (Equivalent to: bart bitmask -b 6)
     """
     if reverse:
         command = ["bart", "bitmask", "-b", str(dims[0])]
@@ -85,7 +86,7 @@ def BART_bitmask(*dims, reverse=False):
     return int(output)
 
 
-def BART_rss(input_path, output_path, bitmask):
+def rss(input_path, output_path, bitmask):
     """
     Computes the root sum of squares (RSS) along selected dimensions.
 
@@ -95,7 +96,7 @@ def BART_rss(input_path, output_path, bitmask):
         bitmask (int): Bitmask specifying along which dimensions to compute RSS.
 
     Usage:
-        BART_rss("input", "output", 6)
+        rss("input", "output", 6)
 
     Equivalent to:
         bart rss 6 input output
@@ -104,7 +105,7 @@ def BART_rss(input_path, output_path, bitmask):
     subprocess.run(command, shell=True, check=True)
 
 
-def BART_whiten(input_path, ndata_path, output_path, optmat_out=None, covar_out=None, 
+def whiten(input_path, ndata_path, output_path, optmat_out=None, covar_out=None, 
                 optmat_in=None, covar_in=None, normalize=False):
     """
     Applies multi-channel noise pre-whitening on input data using noise data.
@@ -120,7 +121,7 @@ def BART_whiten(input_path, ndata_path, output_path, optmat_out=None, covar_out=
         normalize (bool, optional): If True, normalizes variance to 1.
 
     Usage:
-        BART_whiten("input", "noise", "output", optmat_out="optmat_out", covar_out="covar_out")
+        whiten("input", "noise", "output", optmat_out="optmat_out", covar_out="covar_out")
 
     Equivalent to:
         bart whiten input noise output optmat_out covar_out
@@ -144,7 +145,7 @@ def BART_whiten(input_path, ndata_path, output_path, optmat_out=None, covar_out=
     subprocess.run(command, check=True)
 
 
-def BART_coil_compression(kspace, output, num_virtual_channels=None, output_matrix=False, calibration_region=None, 
+def coil_compression(kspace, output, num_virtual_channels=None, output_matrix=False, calibration_region=None, 
                           all_data=False, svd=False, geometric=False, espirit=False):
     """
     Performs coil compression on k-space data.
@@ -161,7 +162,7 @@ def BART_coil_compression(kspace, output, num_virtual_channels=None, output_matr
         espirit (bool, optional): Use ESPIRiT-based compression.
 
     Usage:
-        BART_coil_compression("kspace", "coeff", num_virtual_channels=8, output_matrix=True)
+        coil_compression("kspace", "coeff", num_virtual_channels=8, output_matrix=True)
 
     Equivalent to:
         bart cc -p 8 -M kspace coeff
@@ -189,7 +190,7 @@ def BART_coil_compression(kspace, output, num_virtual_channels=None, output_matr
     subprocess.run(command, check=True)
 
 
-def BART_apply_coil_compression(kspace, compression_matrix, projected_kspace, num_virtual_channels=None, 
+def apply_coil_compression(kspace, compression_matrix, projected_kspace, num_virtual_channels=None, 
                                 inverse=False, no_fft_readout=False, svd=False, 
                                 geometric=False, espirit=False):
     """
@@ -207,7 +208,7 @@ def BART_apply_coil_compression(kspace, compression_matrix, projected_kspace, nu
         espirit (bool, optional): Use ESPIRiT-based compression.
 
     Usage:
-        BART_apply_coil_compression("kspace", "cc_matrix", "proj_kspace", num_virtual_channels=8)
+        apply_coil_compression("kspace", "cc_matrix", "proj_kspace", num_virtual_channels=8)
 
     Equivalent to:
         bart ccapply -p 8 kspace cc_matrix proj_kspace
@@ -231,7 +232,7 @@ def BART_apply_coil_compression(kspace, compression_matrix, projected_kspace, nu
 
     subprocess.run(command, check=True)
 
-def BART_get_dimensions(input_path):
+def get_dimensions(input_path):
     """
     Retrieves the size of the first four dimensions of the input data.
 
@@ -242,7 +243,7 @@ def BART_get_dimensions(input_path):
         tuple: A tuple containing the sizes of dimensions 0, 1, 2, and 3.
 
     Usage:
-        sizes = BART_get_dimensions("input")
+        sizes = get_dimensions("input")
     
     Equivalent to:
         bart -d 0 input
@@ -265,7 +266,7 @@ def BART_get_dimensions(input_path):
 
     return tuple(dimensions)
 
-def BART_ecalib(kspace_path, sensitivity_path, eigenvalue_map_path=None,
+def ecalib(kspace_path, sensitivity_path, eigenvalue_map_path=None,
                 kernel_size=None, calibration_size=None, num_maps=1,
                 threshold=None, crop_value=None, soft_sense=False,
                 soft_weighting=False, intensity_correction=False,
@@ -293,7 +294,7 @@ def BART_ecalib(kspace_path, sensitivity_path, eigenvalue_map_path=None,
         debug_level (int, optional): Verbosity/debug level.
 
     Usage:
-        BART_ecalib("refscan", "maps", "evmaps", kernel_size="6:6", calibration_size="48:48")
+        ecalib("refscan", "maps", "evmaps", kernel_size="6:6", calibration_size="48:48")
     """
     command = ["bart", "ecalib"]
 
@@ -332,7 +333,7 @@ def BART_ecalib(kspace_path, sensitivity_path, eigenvalue_map_path=None,
     # print(f"Running: {' '.join(command)}")
     subprocess.run(command, check=True)
 
-def BART_resize(input_path, output_path, resize_dims, center=True, front=False):
+def resize(input_path, output_path, resize_dims, center=True, front=False):
     """
     Resizes a BART array along specified dimensions with zero-padding or truncation.
 
@@ -344,7 +345,7 @@ def BART_resize(input_path, output_path, resize_dims, center=True, front=False):
         front (bool): If True, apply front-padded resizing (-f).
 
     Usage:
-        BART_resize("infile", "outfile", [(1, 1022), (2, 119)], center=True)
+        resize("infile", "outfile", [(1, 1022), (2, 119)], center=True)
     """
     command = ["bart", "resize"]
 
@@ -361,7 +362,7 @@ def BART_resize(input_path, output_path, resize_dims, center=True, front=False):
     # print("Running:", " ".join(command))
     subprocess.run(command, check=True)
 
-def BART_pics(kspace_path, sensitivity_path, output_path,
+def pics(kspace_path, sensitivity_path, output_path,
               regularization="Q:0.001", scaling=25.788,
               rescale=True, debug_level=0):
     """
@@ -385,7 +386,7 @@ def BART_pics(kspace_path, sensitivity_path, output_path,
     subprocess.run(command, check=True)
 
 
-def BART_reshape_4d(input_path, output_path, new_shape=(1, 1022, 119, 24)):
+def reshape_4d(input_path, output_path, new_shape=(1, 1022, 119, 24)):
     """
     Reshape the input to the specified first 4 dimensions using BART.
 
@@ -406,48 +407,79 @@ def BART_reshape_4d(input_path, output_path, new_shape=(1, 1022, 119, 24)):
     subprocess.run(command, check=True)
 
 
+def show_shape(file_path):
+    """
+    Prints the shape of a BART .cfl file using `bart show -m`.
+
+    Parameters:
+        file_path (str): Path prefix of the BART file (without .cfl/.hdr)
+
+    Prints:
+        - Dimensions if file exists
+        - Error message if file is missing or command fails
+    """
+    cfl_path = file_path + ".cfl"
+    hdr_path = file_path + ".hdr"
+
+    if not (os.path.isfile(cfl_path) and os.path.isfile(hdr_path)):
+        print(f"Error: File '{file_path}' does not exist.")
+        return
+
+    try:
+        result = subprocess.run(
+            ["bart", "show", "-m", file_path],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True
+        )
+        print(f"Shape of {file_path}:", result.stdout.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Error running BART show: {e.stderr.strip()}")
+    
+
+
 if __name__ == '__main__':
     ksp_raw = r"/mikBIG/shreya/bart-demo-ismrm-2024/data_7t_invivo/ksp_raw"
     refscan = r"/mikBIG/shreya/bart-demo-ismrm-2024/data_7t_invivo/refscan"
     output_dir = r"/home/tony_hu/output/20250301"
 
-    from utils import file_exists
 
     # =================== Do IFFT along x-axis ===================
 
     ksp_x_kykz = os.path.join(output_dir, r"ksp_x_kykz")
     if not file_exists(output_dir, ksp_x_kykz):
         print(f"Call BART ifft, save at {ksp_x_kykz}")
-        BART_ifft(ksp_raw, ksp_x_kykz)
+        ifft(ksp_raw, ksp_x_kykz)
 
     refscan_x_kykz = os.path.join(output_dir, r"refscan_x_kykz")
     if not file_exists(output_dir, refscan_x_kykz):
         print(f"Call BART ifft for {refscan}, save at {refscan_x_kykz}")
-        BART_ifft(refscan, refscan_x_kykz)
+        ifft(refscan, refscan_x_kykz)
 
     # ======================== 2D Slice ==========================
 
     ksp_slice = os.path.join(output_dir, r"ksp_slice")
     if not file_exists(output_dir, ksp_slice):
         print(f"Call BART extract, save at {ksp_slice}")
-        BART_extract(ksp_x_kykz, ksp_slice, 0, 512, 513)
+        extract(ksp_x_kykz, ksp_slice, 0, 512, 513)
 
     refscan_slice = os.path.join(output_dir, r"refscan_slice")
     if not file_exists(output_dir, refscan_slice):
         print(f"Call BART extract, save at {refscan_slice}")
-        BART_extract(refscan_x_kykz, refscan_slice, 0, 512, 513)
+        extract(refscan_x_kykz, refscan_slice, 0, 512, 513)
 
     im_slice = os.path.join(output_dir, r"im_slice")
-    bitmask = BART_bitmask(1, 2)
+    bitmask = bitmask(1, 2)
     if not file_exists(output_dir, im_slice):
         print(f"Call BART ifft, save at {im_slice}")
-        BART_ifft(ksp_slice, im_slice, bitmask)
+        ifft(ksp_slice, im_slice, bitmask)
 
     rss_im_slice = os.path.join(output_dir, r"rss_im_slice")
     if not file_exists(output_dir, rss_im_slice):
         print(f"Call BART rss, save at {rss_im_slice}")
-        bitmask2 = BART_bitmask(3)
-        BART_rss(im_slice, rss_im_slice, bitmask2)
+        bitmask2 = bitmask(3)
+        rss(im_slice, rss_im_slice, bitmask2)
 
     # ======================== Noise Prewhitening ==========================
 
@@ -455,36 +487,36 @@ if __name__ == '__main__':
     ksp_slice_white = os.path.join(output_dir, r"ksp_slice_white")
     if not file_exists(output_dir, ksp_slice_white):
         print(f"Call BART whiten for {ksp_slice}, save at {ksp_slice_white}")
-        BART_whiten(ksp_slice, noise, ksp_slice_white, optmat_out="optmat", covar_out="covar")
+        whiten(ksp_slice, noise, ksp_slice_white, optmat_out="optmat", covar_out="covar")
     
     refscan_slice_white = os.path.join(output_dir, r"refscan_slice_white")
     if not file_exists(output_dir, refscan_slice_white):
         print(f"Call BART whiten for {refscan_slice}, save at {refscan_slice_white}")
-        BART_whiten(refscan_slice, noise, refscan_slice_white, optmat_out="optmat", covar_out="covar")
+        whiten(refscan_slice, noise, refscan_slice_white, optmat_out="optmat", covar_out="covar")
 
     refscan_3d_white = os.path.join(output_dir, r"refscan_3d_white")
     if not file_exists(output_dir, refscan_3d_white):
         print(f"Call BART whiten for {refscan}, save at {refscan_3d_white}")
-        BART_whiten(refscan, noise, refscan_3d_white, optmat_out="optmat", covar_out="covar")
+        whiten(refscan, noise, refscan_3d_white, optmat_out="optmat", covar_out="covar")
 
     ksp_3d_white = os.path.join(output_dir, r"ksp_3d_white")
     if not file_exists(output_dir, ksp_3d_white):
         print(f"Call BART whiten for {ksp_raw}, save at {ksp_3d_white}")
-        BART_whiten(ksp_raw, noise, ksp_3d_white, optmat_out="optmat", covar_out="covar")
+        whiten(ksp_raw, noise, ksp_3d_white, optmat_out="optmat", covar_out="covar")
 
     # ======================== Coil Compression ==========================
 
     cc_mat_svd = os.path.join(output_dir, r"cc_mat_svd")
     if not file_exists(output_dir, cc_mat_svd):
         print(f"Call BART Coil Compression Matrix of {refscan_3d_white}, save at {cc_mat_svd}")
-        BART_coil_compression(refscan_3d_white, cc_mat_svd, svd=True, num_virtual_channels=24, output_matrix=True, calibration_region=48)
+        coil_compression(refscan_3d_white, cc_mat_svd, svd=True, num_virtual_channels=24, output_matrix=True, calibration_region=48)
 
     refscan_3d_white_cc = os.path.join(output_dir, r"refscan_3d_white_cc")
     if not file_exists(output_dir, refscan_3d_white_cc):
         print(f"Call BART Coil Compression for {refscan_3d_white}, save at {refscan_3d_white_cc}")
-        BART_apply_coil_compression(refscan_3d_white, cc_mat_svd, refscan_3d_white_cc, svd=True, num_virtual_channels=24)
+        apply_coil_compression(refscan_3d_white, cc_mat_svd, refscan_3d_white_cc, svd=True, num_virtual_channels=24)
 
     ksp_3d_white_cc = os.path.join(output_dir, r"ksp_3d_white_cc")
     if not file_exists(output_dir, ksp_3d_white_cc):
         print(f"Call BART Coil Compression for {ksp_3d_white}, save at {ksp_3d_white_cc}")
-        BART_apply_coil_compression(ksp_3d_white, cc_mat_svd, ksp_3d_white_cc, svd=True, num_virtual_channels=24)
+        apply_coil_compression(ksp_3d_white, cc_mat_svd, ksp_3d_white_cc, svd=True, num_virtual_channels=24)

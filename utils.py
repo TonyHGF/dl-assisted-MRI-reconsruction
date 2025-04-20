@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 
 
 def summarize_dtype(dtype, indent=0):
@@ -40,3 +41,25 @@ def build_kspace(acquisition_list):
         kspace_4d[:, ky, kz, :] = data
 
     return kspace_4d
+
+
+def file_exists(folder_path: str, filename: str) -> bool:
+    """
+    Check if a file with the specified name (ignoring extensions) exists in the given folder.
+
+    Parameters:
+    folder_path (str): The folder where the search should be performed.
+    filename (str): The target filename, which can be a full path or just a filename.
+
+    Returns:
+    bool: True if a file with the same name (ignoring extension) exists, otherwise False.
+    """
+    folder = Path(folder_path).resolve()  # Convert to absolute path
+    file_name = Path(filename).stem  # Extract filename without extension
+
+    # Ensure the folder exists
+    if not folder.is_dir():
+        raise ValueError(f"Folder '{folder}' does not exist or is not a valid directory.")
+
+    # Check for matching filenames (ignoring extensions)
+    return any(file.stem == file_name for file in folder.iterdir() if file.is_file())
